@@ -1,13 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { defaults, loadState, normalize, saveState } from '../lib/storage'
+import { fetchRemote, saveRemote } from '../lib/remote'
 import { weekDates } from '../lib/dates'
 
-// Estado do placar + ações. Persistência isolada em lib/storage.js
-// (ponto único para trocar localStorage por Supabase).
-export function usePlacar() {
-  const [state, setState] = useState(loadState)
+// Estado do placar + ações. O banco (Supabase) é a fonte da verdade; o localStorage
+// só guarda uma cópia local do editor (backup/offline).
+// role: 'editor' grava no banco; 'viewer' só lê e as ações viram no-op.
+export function usePlacar(role) {
+  const editor = role === 'editor'
+  const [state, setState] = useState(() => (editor ? loadState() : defaults()))
+  const [ready, setReady] = useState(false)
+  const [loadError, setLoadError] = useState(false)
+  const [sync, setSync] = useState('idle') // idle | saving | saved | error
   const [message, setMessage] = useState('')
   const timer = useRef()
+  const dirty = useRef(false)
+  const canSave = useRef(false) // só libera gravação depois de ler o banco com sucesso
 
   const toast = useCallback((msg) => {
     setMessage(msg)
@@ -15,11 +23,62 @@ export function usePlacar() {
     timer.current = setTimeout(() => setMessage(''), 1800)
   }, [])
 
+  // Carga inicial do banco. Se ainda não há nada lá, o editor sobe os dados locais.
   useEffect(() => {
+    let alive = true
+    fetchRemote()
+      .then((row) => {
+        if (!alive) return
+        if (row) setState(normalize(row))
+        else if (editor) dirty.current = true
+        canSave.current = editor
+        setReady(true)
+      })
+      .catch(() => {
+        if (!alive) return
+        setLoadError(true)
+        setReady(true)
+      })
+    return () => { alive = false }
+  }, [editor])
+
+  // Visualizador: atualiza sozinho a cada minuto e ao voltar para a aba
+  useEffect(() => {
+    if (editor || !ready || loadError) return
+    const refresh = () => fetchRemote().then((row) => row && setState(normalize(row))).catch(() => {})
+    const id = setInterval(refresh, 60000)
+    const onVis = () => document.visibilityState === 'visible' && refresh()
+    document.addEventListener('visibilitychange', onVis)
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVis) }
+  }, [editor, ready, loadError])
+
+  // Editor: cópia local imediata + gravação no banco com pequeno atraso
+  useEffect(() => {
+    if (!ready || !editor) return
     if (!saveState(state)) toast('Não foi possível salvar neste navegador')
-  }, [state, toast])
+    if (!canSave.current || !dirty.current) return
+    setSync('saving')
+    const t = setTimeout(async () => {
+      try {
+        await saveRemote(state)
+        dirty.current = false
+        setSync('saved')
+      } catch {
+        setSync('error')
+        toast('Não foi possível salvar no servidor')
+      }
+    }, 800)
+    return () => clearTimeout(t)
+  }, [state, ready, editor, toast])
+
+  useEffect(() => {
+    const warn = (e) => { if (dirty.current && canSave.current) e.preventDefault() }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [])
 
   const update = useCallback((fn) => {
+    dirty.current = true
     setState((prev) => {
       const next = structuredClone(prev)
       fn(next)
@@ -136,15 +195,23 @@ export function usePlacar() {
     },
 
     importState(data) {
+      dirty.current = true
       setState(normalize(data))
       toast('Backup importado')
     },
 
     wipe() {
+      dirty.current = true
       setState(defaults())
       toast('Dados apagados')
     },
   }), [update, toast])
 
-  return { state, actions, message }
+  // Visualizador: toda ação que altera dados vira aviso (o banco também bloqueia por RLS)
+  const guarded = useMemo(() => {
+    if (editor) return actions
+    return Object.fromEntries(Object.entries(actions).map(([k, fn]) => [k, k === 'toast' ? fn : () => toast('Somente leitura')]))
+  }, [actions, editor, toast])
+
+  return { state, actions: guarded, message, ready, loadError, sync }
 }

@@ -66,7 +66,6 @@ td.off{color:var(--faint)}
 textarea{min-height:80px;resize:vertical}
 .notes{padding:14px 18px 18px}
 .notes label{font-weight:700;display:block;margin-bottom:6px}
-.foot{color:var(--muted);font-size:12px;margin-top:8px}
 .pbar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-bottom:16px}
 .pbar p{margin:0;color:var(--muted);max-width:70ch}
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:4px 18px 18px}
@@ -151,3 +150,52 @@ textarea{min-height:80px;resize:vertical}
 .ugc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;padding-bottom:4px}
 .hub-hint{color:var(--muted);font-size:12px;text-align:center;margin:8px 18px 16px}
 @media (max-width:760px){.ugc-bar{margin-left:0;width:100%}.ugc-bar input{flex:1}.area-head{flex-wrap:wrap}}
+
+.who{display:flex;gap:10px;align-items:center;font-weight:600;color:var(--muted)}
+.sync{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--soft);color:var(--muted)}
+.sync.saved{background:var(--goodbg);color:var(--good)}
+.sync.error{background:var(--badbg);color:var(--bad)}
+.banner{background:var(--badbg);color:var(--bad);border:1px solid #F0CDBE;border-radius:10px;padding:10px 14px;font-weight:600}
+.gate{position:relative;min-height:100vh;overflow:hidden;display:grid;place-items:center;padding:32px 24px;background:linear-gradient(140deg,#1E1650 0%,#2D2183 45%,#0B4D47 100%);color:#fff}
+.gate-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.7;pointer-events:none}
+.gate-blob.a{width:480px;height:480px;left:-120px;top:-140px;background:#6C55FF}
+.gate-blob.b{width:420px;height:420px;right:-100px;bottom:-140px;background:#14B8A0}
+.gate-blob.c{width:300px;height:300px;left:42%;top:52%;background:#A78BFA;opacity:.35}
+.gate-inner{position:relative;z-index:1;width:100%;max-width:980px;display:grid;grid-template-columns:1fr 400px;gap:64px;align-items:center}
+.gate-brand{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.gate-hero h1{margin:12px 0 14px;font-size:48px;line-height:1.05;font-weight:800;letter-spacing:-.03em;max-width:12ch}
+.gate-hero p{margin:0;font-size:17px;opacity:.75}
+.gate-glass{padding:32px;border-radius:24px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);box-shadow:0 20px 60px rgba(10,6,40,.35),inset 0 1px 0 rgba(255,255,255,.25);-webkit-backdrop-filter:blur(22px) saturate(140%);backdrop-filter:blur(22px) saturate(140%)}
+.gate-glass h2{margin:0 0 20px;font-size:22px;font-weight:800;letter-spacing:-.01em}
+.gate-list{display:grid;gap:10px}
+.gate-person{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;text-align:left;color:#fff;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.gate-person:hover,.gate-person:focus-visible{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);transform:translateY(-1px)}
+.gate-person:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.gate-avatar{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;font-weight:800;font-size:17px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3)}
+.gate-person.felipe .gate-avatar{background:rgba(124,103,255,.55)}
+.gate-person.renato .gate-avatar{background:rgba(20,184,160,.5)}
+.gate-info{flex:1;min-width:0}
+.gate-info b{display:block;font-size:16px;font-weight:800}
+.gate-info small{font-size:13px;opacity:.7}
+.gate-arrow{font-size:18px;opacity:.5;transition:opacity .2s,transform .2s}
+.gate-person:hover .gate-arrow{opacity:1;transform:translateX(3px)}
+.gate-back{border:0;background:none;padding:0;margin-bottom:18px;color:#fff;opacity:.7;font-weight:700;cursor:pointer}
+.gate-back:hover{opacity:1}
+.gate-input{display:block;width:100%;padding:14px 16px;font-size:15px;color:#fff;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08)}
+.gate-input::placeholder{color:rgba(255,255,255,.55)}
+.gate-input:focus{outline:none;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.14)}
+.gate-input[aria-invalid=true]{border-color:#FF9C85}
+.gate-err{margin-top:10px;color:#FFB4A3;font-weight:700;font-size:13px}
+.gate-submit{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;background:#fff;color:#2D2183;font-weight:800;font-size:15px;cursor:pointer;transition:transform .2s,opacity .2s}
+.gate-submit:hover{transform:translateY(-1px)}
+.gate-submit:disabled{opacity:.45;cursor:default;transform:none}
+@media (max-width:860px){
+  .gate{place-items:start center;padding:48px 20px}
+  .gate-inner{grid-template-columns:1fr;gap:32px}
+  .gate-hero h1{font-size:34px;max-width:none}
+  .gate-glass{padding:24px}
+}
+@media (prefers-reduced-motion:reduce){.gate-person,.gate-arrow,.gate-submit{transition:none}}
+/* Renato: tudo que altera dados fica inerte; navegação, datas e expandir cards continuam */
+.viewer input:not([type=date]):not([type=month]),.viewer textarea,.viewer select,.viewer .check,.viewer .objrow button,.viewer .uavatar,.viewer .ulink,.viewer .btn.primary,.viewer .btn.danger{pointer-events:none}
+.viewer input:not([type=date]):not([type=month]),.viewer textarea,.viewer select{background:var(--soft)}
