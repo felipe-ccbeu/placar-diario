@@ -27,8 +27,8 @@ export function useSession() {
   }, [])
 
   const signInEditor = useCallback(async (password) => {
-    const email = import.meta.env.VITE_EDITOR_EMAIL
-    if (!email) return 'Falta definir VITE_EDITOR_EMAIL.'
+    // E-mail não é segredo (iria para o bundle de qualquer forma); a senha é que protege
+    const email = import.meta.env.VITE_EDITOR_EMAIL || 'felipe@ccbeuguarapuava.com.br'
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) return error.message === 'Invalid login credentials' ? 'Senha incorreta.' : 'Não foi possível entrar: ' + error.message
     flag.clear()
