@@ -42,15 +42,20 @@ export function usePlacar(role) {
     return () => { alive = false }
   }, [editor])
 
-  // Visualizador: atualiza sozinho a cada minuto e ao voltar para a aba
+  // Atualiza sozinho a cada minuto e ao voltar para a aba, para não sobrescrever o que
+  // a API gravou. O editor só recarrega sem alteração pendente (antes e depois da leitura);
+  // o setState daqui não marca dirty, então não regrava o que acabou de ler.
   useEffect(() => {
-    if (editor || !ready || loadError) return
-    const refresh = () => fetchRemote().then((row) => row && setState(normalize(row))).catch(() => {})
+    if (!ready || loadError) return
+    const refresh = () => {
+      if (dirty.current) return
+      fetchRemote().then((row) => row && !dirty.current && setState(normalize(row))).catch(() => {})
+    }
     const id = setInterval(refresh, 60000)
     const onVis = () => document.visibilityState === 'visible' && refresh()
     document.addEventListener('visibilitychange', onVis)
     return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVis) }
-  }, [editor, ready, loadError])
+  }, [ready, loadError])
 
   // Editor: cópia local imediata + gravação no banco com pequeno atraso
   useEffect(() => {
