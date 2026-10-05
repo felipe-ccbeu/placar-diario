@@ -113,7 +113,9 @@ export function usePlacar(role) {
     toggleBool(b, date, id) {
       update((s) => {
         const d = s.days[b + '|' + date] = s.days[b + '|' + date] || {}
-        if (d[id]) delete d[id]
+        // vazio → ✓ → ✗ → vazio
+        if (d[id] === true) d[id] = false
+        else if (d[id] === false) delete d[id]
         else d[id] = true
       })
     },

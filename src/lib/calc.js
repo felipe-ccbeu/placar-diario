@@ -77,7 +77,7 @@ export function summary(state, b, m, origin, weekStart) {
     const fri = md.filter((d) => parse(d).getDay() === 5)
     const fEl = fri.filter((d) => d <= t).length
     const mOn = fri.filter((d) => val(state, b, d, m)).length
-    return { w: val(state, b, wd[4], m) ? 'Feito' : '—', m: `${mOn}/${fri.length}`, a: fEl ? Math.round((mOn / fEl) * 100) + '%' : '—' }
+    return { w: val(state, b, wd[4], m) ? 'Feito' : state.days[b + '|' + wd[4]]?.[m.id] === false ? 'Não feito' : '—', m: `${mOn}/${fri.length}`, a: fEl ? Math.round((mOn / fEl) * 100) + '%' : '—' }
   }
   const wv = wd.map((d) => val(state, b, d, m, origin)).filter((x) => x !== '').map(Number)
   const mv = md.map((d) => val(state, b, d, m, origin)).filter((x) => x !== '').map(Number)

@@ -116,10 +116,17 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart 
       {wd.map((d, i) => {
         if (m.weekly && i !== 4) return <td key={d} className={'off ' + tc(d)}>—</td>
         const on = val(state, b, d, m)
+        const off = state.days[b + '|' + d]?.[m.id] === false
         return (
           <td key={d} className={tc(d)}>
-            <button className={'check' + (on ? ' on' : '')} aria-pressed={on} aria-label={`${m.label} ${ddmm(d)}`} onClick={() => actions.toggleBool(b, d, m.id)}>
-              {on ? '✓' : '–'}
+            <button
+              className={'check' + (on ? ' on' : off ? ' no' : '')}
+              aria-pressed={on ? true : off ? 'mixed' : false}
+              aria-label={`${m.label} ${ddmm(d)}`}
+              title="Clique para alternar: sim, não, vazio"
+              onClick={() => actions.toggleBool(b, d, m.id)}
+            >
+              {on ? '✓' : off ? '✗' : '–'}
             </button>
           </td>
         )
