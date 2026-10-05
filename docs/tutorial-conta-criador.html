@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virar conta de Criador</title>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --muted: #6b6b70;
+    --line: #e4e2dc;
+    --accent: #c13584;
+    --accent-soft: #fbe9f3;
+    --warn-bg: #fff6e0;
+    --warn-line: #f0d48a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141416;
+      --card: #1e1e21;
+      --text: #ededf0;
+      --muted: #a0a0a8;
+      --line: #2e2e33;
+      --accent: #e57ab8;
+      --accent-soft: #3a2030;
+      --warn-bg: #2d2717;
+      --warn-line: #5c4a1c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141416;
+    --card: #1e1e21;
+    --text: #ededf0;
+    --muted: #a0a0a8;
+    --line: #2e2e33;
+    --accent: #e57ab8;
+    --accent-soft: #3a2030;
+    --warn-bg: #2d2717;
+    --warn-line: #5c4a1c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 8px; }
+  h2 { font-size: 1.2rem; margin: 40px 0 12px; }
+  .lead { color: var(--muted); margin: 0 0 24px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; gap: 12px; }
+  ol.steps > li {
+    counter-increment: s;
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 20px 16px 64px;
+  }
+  ol.steps > li::before {
+    content: counter(s);
+    position: absolute; left: 18px; top: 16px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 700; display: grid; place-items: center;
+  }
+  ol.steps strong { display: block; margin-bottom: 2px; }
+  ol.steps p { margin: 0; color: var(--muted); }
+  .path {
+    display: inline-block; margin-top: 6px;
+    font-size: .9rem; color: var(--text);
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: 6px; padding: 2px 8px;
+  }
+  .note {
+    background: var(--warn-bg); border: 1px solid var(--warn-line);
+    border-radius: 12px; padding: 14px 18px; margin-top: 16px;
+  }
+  .note p { margin: 0; }
+  ul.check { padding-left: 20px; margin: 0; }
+  ul.check li { margin: 4px 0; }
+  .muted { color: var(--muted); }
+  footer { margin-top: 48px; font-size: .85rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Como transformar uma conta do Instagram em conta de Criador</h1>
+  <p class="lead">Leva cerca de 1 minuto por conta e é gratuito. Os seguidores não percebem nenhuma diferença, e você pode voltar para conta pessoal quando quiser.</p>
+
+  <div class="card">
+    <strong>Por que fazer isso?</strong>
+    <p class="muted" style="margin:6px 0 0">Só contas profissionais (Criador ou Empresa) permitem que o Placar Diário mostre seguidores, últimas postagens e o desempenho de cada post. Além disso, a conta passa a ter o painel de insights dentro do próprio Instagram.</p>
+  </div>
+
+  <h2>Antes de começar</h2>
+  <ul class="check">
+    <li>Faça pelo <b>app do Instagram no celular</b>. Pelo navegador nem sempre aparece a opção.</li>
+    <li>A conta precisa ser <b>pública</b>. Conta profissional não pode ser privada.</li>
+    <li>Repita o passo a passo em cada uma das contas UGC.</li>
+  </ul>
+
+  <h2>Passo a passo</h2>
+  <ol class="steps">
+    <li>
+      <strong>Abra o perfil da conta</strong>
+      <p>Toque na sua foto no canto inferior direito. Confira se está na conta certa; se tiver várias logadas, troque tocando no @ no topo.</p>
+    </li>
+    <li>
+      <strong>Abra o menu</strong>
+      <p>Toque nas três linhas (☰) no canto superior direito para abrir as configurações.</p>
+    </li>
+    <li>
+      <strong>Encontre o tipo de conta</strong>
+      <p>Role até a seção “Para profissionais” e toque em <b>Tipo de conta e ferramentas</b>.</p>
+      <span class="path">☰ → Tipo de conta e ferramentas</span>
+    </li>
+    <li>
+      <strong>Mude para conta profissional</strong>
+      <p>Toque em <b>Mudar para conta profissional</b> e avance pelas telas de apresentação.</p>
+    </li>
+    <li>
+      <strong>Escolha uma categoria</strong>
+      <p>Escolha a que mais combina com a conta (ex.: “Criador de conteúdo digital”). Pode deixar a opção de exibir a categoria no perfil desligada.</p>
+    </li>
+    <li>
+      <strong>Selecione “Criador de conteúdo”</strong>
+      <p>Quando perguntar o tipo, escolha <b>Criador de conteúdo</b> (não “Empresa”) e toque em Avançar.</p>
+    </li>
+    <li>
+      <strong>Pule as telas opcionais</strong>
+      <p>Informações de contato, conexão com o Facebook e convites podem ser puladas. Não são necessárias.</p>
+    </li>
+    <li>
+      <strong>Confira se deu certo</strong>
+      <p>No perfil deve aparecer o botão <b>Painel profissional</b> logo abaixo da bio. Se apareceu, está pronto.</p>
+    </li>
+  </ol>
+
+  <div class="note">
+    <p><b>Os nomes podem variar um pouco.</b> O Instagram muda os menus de vez em quando. Se não achar a opção, use a busca dentro das configurações (☰) e procure por “profissional”.</p>
+  </div>
+
+  <h2>Se a conta estiver privada</h2>
+  <ol class="steps">
+    <li>
+      <strong>Deixe a conta pública</strong>
+      <p>No menu (☰), toque em <b>Privacidade da conta</b> e desligue <b>Conta privada</b>. Depois volte ao passo 3.</p>
+      <span class="path">☰ → Privacidade da conta → Conta privada (desligado)</span>
+    </li>
+  </ol>
+
+  <h2>Quero voltar para conta pessoal</h2>
+  <div class="card">
+    <p style="margin:0">No menu (☰), vá em <b>Tipo de conta e ferramentas</b> e toque em <b>Mudar tipo de conta → Mudar para conta pessoal</b>. Os insights acumulados são perdidos, mas posts e seguidores continuam iguais.</p>
+  </div>
+
+  <h2>Depois disso</h2>
+  <div class="card">
+    <p style="margin:0">Quando todas as contas estiverem como Criador, avise no grupo. O próximo passo é conectar cada conta ao Placar Diário para que os dados apareçam automaticamente.</p>
+  </div>
+
+  <footer>Placar Diário · tutorial interno</footer>
+</main>
+</body>
+</html>
