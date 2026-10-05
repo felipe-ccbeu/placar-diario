@@ -1,3 +1,5 @@
+import { Cmt } from '../components/Comments'
+import DatePicker from '../components/DatePicker'
 import ParetoPanel, { ParetoBody } from '../components/ParetoPanel'
 import { aggregate, originTotals, toItems } from '../lib/calc'
 import { BNAME, BRANDS } from '../lib/constants'
@@ -17,7 +19,7 @@ function ConversionPanel({ state, brand, month, ml }) {
   const ts = rows.reduce((a, r) => a + r.s, 0)
   const avg = tl ? ts / tl : 0
   return (
-    <div className="panel wide">
+    <Cmt className="panel wide" anchor={'pareto:' + brand + ':conv'} label={`Pareto · ${BNAME[brand]} · Conversão por origem · ${ml}`}>
       <h3>Conversão por origem</h3>
       {!rows.length ? (
         <p className="empty">Nenhum lead ou venda registrado em {ml}.</p>
@@ -50,16 +52,16 @@ function ConversionPanel({ state, brand, month, ml }) {
           <p className="hint">Verde: converte acima da média da marca. Laranja: abaixo. Vendas do mês divididas pelos leads do mês, então quem fecha com atraso pode cair no mês seguinte.</p>
         </>
       )}
-    </div>
+    </Cmt>
   )
 }
 
-function ObjectionsPanel({ state, actions, brand, month }) {
+function ObjectionsPanel({ state, actions, brand, month, ml }) {
   const cur = state.obj[brand + '|' + month] || {}
   const cats = [...state.config[brand].objections]
   for (const k of Object.keys(cur)) if (!cats.includes(k)) cats.push(k)
   return (
-    <div className="panel">
+    <Cmt className="panel" anchor={'pareto:' + brand + ':obj'} label={`Pareto · ${BNAME[brand]} · Objeções e falhas · ${ml}`}>
       <h3>Objeções e falhas</h3>
       <div>
         {cats.map((c) => (
@@ -72,7 +74,7 @@ function ObjectionsPanel({ state, actions, brand, month }) {
         ))}
       </div>
       <ParetoBody items={toItems(cur)} empty="Some uma ocorrência sempre que um cliente travar por um desses motivos ou alguém relatar uma falha." />
-    </div>
+    </Cmt>
   )
 }
 
@@ -81,7 +83,7 @@ export default function ParetoPage({ state, actions, month, onMonth }) {
   return (
     <main>
       <div className="pbar">
-        <label>Mês <input type="month" value={month} onChange={(e) => e.target.value && onMonth(e.target.value)} /></label>
+        <DatePicker month value={month} onChange={onMonth} label="Escolher mês" />
         <p>Os itens marcados como vitais somam cerca de 80% do resultado de {ml}. É deles que saem as tasks Vitais das semanas seguintes.</p>
       </div>
       {BRANDS.map((b) => (
@@ -89,9 +91,11 @@ export default function ParetoPage({ state, actions, month, onMonth }) {
           <div className="area-head"><h2>{BNAME[b]}</h2></div>
           <div className="pgrid">
             <ConversionPanel state={state} brand={b} month={month} ml={ml} />
-            <ParetoPanel title="Leads por origem" items={aggregate(state, b, 'leads', month)} empty={`Nenhum lead registrado em ${ml}.`} />
-            <ParetoPanel title="Vendas por origem" items={aggregate(state, b, 'sales', month)} empty={`Nenhuma venda registrada em ${ml}.`} />
-            <ObjectionsPanel state={state} actions={actions} brand={b} month={month} />
+            <ParetoPanel title="Leads por origem" items={aggregate(state, b, 'leads', month)} empty={`Nenhum lead registrado em ${ml}.`}
+              anchor={'pareto:' + b + ':leads'} label={`Pareto · ${BNAME[b]} · Leads por origem · ${ml}`} />
+            <ParetoPanel title="Vendas por origem" items={aggregate(state, b, 'sales', month)} empty={`Nenhuma venda registrada em ${ml}.`}
+              anchor={'pareto:' + b + ':sales'} label={`Pareto · ${BNAME[b]} · Vendas por origem · ${ml}`} />
+            <ObjectionsPanel state={state} actions={actions} brand={b} month={month} ml={ml} />
           </div>
         </section>
       ))}

@@ -1,9 +1,14 @@
 import { fmt, originsFor, ratio, summary, val } from '../lib/calc'
-import { ddmm, nf } from '../lib/dates'
+import { DAYN, ddmm, nf } from '../lib/dates'
+import { Cmt } from './Comments'
 
-function LabelCell({ m, extra }) {
+// Cada linha tem uma chave (id da métrica + origem) usada nas âncoras dos comentários
+const rowKey = (m, origin) => m.id + (origin ? ':' + origin : '')
+const rowName = (m, origin) => m.label + (origin ? ' / ' + origin : '')
+
+function LabelCell({ m, extra, origin, wk }) {
   return (
-    <td className="ind">
+    <Cmt as="td" className="ind" anchor={'row:' + rowKey(m, origin)} label={`${wk} · ${rowName(m, origin)}`}>
       <b>
         {m.label}
         {m.top && <span className="pill">principal</span>}
@@ -11,11 +16,11 @@ function LabelCell({ m, extra }) {
         {m.type === 'ratio' && <span className="pill wk">automático</span>}
       </b>
       <span className="hint">{extra || m.hint}</span>
-    </td>
+    </Cmt>
   )
 }
 
-function SummaryCells({ state, b, m, origin = '', weekStart }) {
+function SummaryCells({ state, b, m, origin = '', weekStart, wk }) {
   const s = summary(state, b, m, origin, weekStart)
   let monthText = s.m
   let cls = ''
@@ -30,10 +35,20 @@ function SummaryCells({ state, b, m, origin = '', weekStart }) {
   }
   return (
     <>
-      <td className="s">{s.w}</td>
-      <td className={'s ' + cls} title={title}>{monthText}</td>
-      <td className="s">{s.a}</td>
+      <Cmt as="td" className="s" anchor={`sum:${rowKey(m, origin)}:w`} label={`${wk} · ${rowName(m, origin)} · total da semana`}>{s.w}</Cmt>
+      <Cmt as="td" className={'s ' + cls} title={title} anchor={`sum:${rowKey(m, origin)}:m`} label={`${wk} · ${rowName(m, origin)} · total do mês`}>{monthText}</Cmt>
+      <Cmt as="td" className="s" anchor={`sum:${rowKey(m, origin)}:a`} label={`${wk} · ${rowName(m, origin)} · média ou %`}>{s.a}</Cmt>
     </>
+  )
+}
+
+// Célula de um dia, comentável
+function DayCell({ m, d, origin, wd, wk, today, className = '', children }) {
+  return (
+    <Cmt as="td" className={(className + (d === today ? ' today' : '')).trim()} anchor={`cell:${rowKey(m, origin)}:${d}`}
+      label={`${wk.split(' · ')[0]} · ${rowName(m, origin)} · ${DAYN[wd.indexOf(d)]} ${ddmm(d)}`}>
+      {children}
+    </Cmt>
   )
 }
 
@@ -53,19 +68,20 @@ function NumInput({ value, label, money, onChange }) {
   )
 }
 
-export default function MetricRows({ state, actions, b, m, wd, today, weekStart }) {
+export default function MetricRows({ state, actions, b, m, wd, today, weekStart, wk }) {
   const tc = (d) => (d === today ? 'today' : '')
+  const cell = (d, origin) => ({ m, d, origin, wd, wk, today })
 
   if (m.type === 'number') {
     return (
       <tr className={m.top ? 'top' : ''}>
-        <LabelCell m={m} />
+        <LabelCell m={m} wk={wk} />
         {wd.map((d) => (
-          <td key={d} className={tc(d)}>
+          <DayCell key={d} {...cell(d)}>
             <NumInput value={val(state, b, d, m)} label={`${m.label} ${ddmm(d)}`} money={m.money} onChange={(v) => actions.setNumber(b, d, m, '', v)} />
-          </td>
+          </DayCell>
         ))}
-        <SummaryCells state={state} b={b} m={m} weekStart={weekStart} />
+        <SummaryCells state={state} b={b} m={m} weekStart={weekStart} wk={wk} />
       </tr>
     )
   }
@@ -75,22 +91,22 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart 
     return (
       <>
         <tr className="top">
-          <LabelCell m={m} />
+          <LabelCell m={m} wk={wk} />
           {wd.map((d) => {
             const v = val(state, b, d, m)
-            return <td key={d} className={'calc ' + tc(d)}>{v === '' ? '' : nf(v)}</td>
+            return <DayCell key={d} {...cell(d)} className="calc">{v === '' ? '' : nf(v)}</DayCell>
           })}
-          <SummaryCells state={state} b={b} m={m} weekStart={weekStart} />
+          <SummaryCells state={state} b={b} m={m} weekStart={weekStart} wk={wk} />
         </tr>
         {originsFor(state, b, m, wd).map((o) => (
           <tr key={o} className="sub">
-            <LabelCell m={{ ...m, label: o, top: false }} extra={cfg.includes(o) ? 'origem' : 'fora da lista atual'} />
+            <LabelCell m={{ ...m, label: o, top: false }} extra={cfg.includes(o) ? 'origem' : 'fora da lista atual'} origin={o} wk={wk} />
             {wd.map((d) => (
-              <td key={d} className={tc(d)}>
+              <DayCell key={d} {...cell(d, o)}>
                 <NumInput value={val(state, b, d, m, o)} label={`${m.label} ${o} ${ddmm(d)}`} onChange={(v) => actions.setNumber(b, d, m, o, v)} />
-              </td>
+              </DayCell>
             ))}
-            <SummaryCells state={state} b={b} m={m} origin={o} weekStart={weekStart} />
+            <SummaryCells state={state} b={b} m={m} origin={o} weekStart={weekStart} wk={wk} />
           </tr>
         ))}
       </>
@@ -100,25 +116,25 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart 
   if (m.type === 'ratio') {
     return (
       <tr className="derived">
-        <LabelCell m={m} />
+        <LabelCell m={m} wk={wk} />
         {wd.map((d) => {
           const v = ratio(state, b, m, [d])
-          return <td key={d} className={'calc ' + tc(d)}>{v === null ? '' : fmt(m, v)}</td>
+          return <DayCell key={d} {...cell(d)} className="calc">{v === null ? '' : fmt(m, v)}</DayCell>
         })}
-        <SummaryCells state={state} b={b} m={m} weekStart={weekStart} />
+        <SummaryCells state={state} b={b} m={m} weekStart={weekStart} wk={wk} />
       </tr>
     )
   }
 
   return (
     <tr>
-      <LabelCell m={m} />
+      <LabelCell m={m} wk={wk} />
       {wd.map((d, i) => {
         if (m.weekly && i !== 4) return <td key={d} className={'off ' + tc(d)}>—</td>
         const on = val(state, b, d, m)
         const off = state.days[b + '|' + d]?.[m.id] === false
         return (
-          <td key={d} className={tc(d)}>
+          <DayCell key={d} {...cell(d)}>
             <button
               className={'check' + (on ? ' on' : off ? ' no' : '')}
               aria-pressed={on ? true : off ? 'mixed' : false}
@@ -128,10 +144,10 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart 
             >
               {on ? '✓' : off ? '✗' : '–'}
             </button>
-          </td>
+          </DayCell>
         )
       })}
-      <SummaryCells state={state} b={b} m={m} weekStart={weekStart} />
+      <SummaryCells state={state} b={b} m={m} weekStart={weekStart} wk={wk} />
     </tr>
   )
 }

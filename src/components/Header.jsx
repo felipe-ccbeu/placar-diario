@@ -1,3 +1,5 @@
+import { CommentsButton } from './Comments'
+
 const TABS = [
   { id: 'VIVR', label: 'Vivr' },
   { id: 'SKOLEN', label: 'Skolen' },
@@ -22,8 +24,11 @@ export default function Header({ tab, onTab, role, sync, onLeave }) {
       </nav>
       <div className="who">
         {role === 'editor' && SYNC[sync] && <span className={'sync ' + sync}>{SYNC[sync]}</span>}
-        <span>{role === 'editor' ? 'Felipe' : 'Renato · somente leitura'}</span>
-        <button className="btn" onClick={onLeave}>Trocar</button>
+        <CommentsButton />
+        <span>{role === 'editor' ? 'Felipe' : 'Renato · Comentador'}</span>
+        <button className="btn icon" onClick={onLeave} aria-label="Sair" title="Sair">
+          <svg className="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+        </button>
       </div>
     </header>
   )

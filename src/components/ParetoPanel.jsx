@@ -1,3 +1,4 @@
+import { Cmt } from './Comments'
 import { nf } from '../lib/dates'
 
 function Chart({ items }) {
@@ -61,11 +62,11 @@ export function ParetoBody({ items, empty }) {
   )
 }
 
-export default function ParetoPanel({ title, items, empty }) {
+export default function ParetoPanel({ title, items, empty, anchor, label }) {
   return (
-    <div className="panel">
+    <Cmt className="panel" anchor={anchor} label={label}>
       <h3>{title}</h3>
       <ParetoBody items={items} empty={empty} />
-    </div>
+    </Cmt>
   )
 }

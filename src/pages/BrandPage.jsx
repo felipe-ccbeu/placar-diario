@@ -1,8 +1,9 @@
+import { Cmt } from '../components/Comments'
 import FocusBlock from '../components/FocusBlock'
 import MetricRows from '../components/MetricRows'
 import WeekBar from '../components/WeekBar'
 import UgcSection from './UgcSection'
-import { AREAS } from '../lib/constants'
+import { AREAS, BNAME } from '../lib/constants'
 import { DAYN, ddmm, monthLabel, monthOfWeek, todayIso, weekDates } from '../lib/dates'
 
 export default function BrandPage({ brand, state, actions, weekStart, onWeek }) {
@@ -10,6 +11,7 @@ export default function BrandPage({ brand, state, actions, weekStart, onWeek }) 
   const today = todayIso()
   const month = monthOfWeek(weekStart)
   const note = state.weeks[brand + '|' + weekStart]?.notes || ''
+  const wk = `${BNAME[brand]} · semana de ${ddmm(wd[0])}`
 
   return (
     <>
@@ -17,7 +19,7 @@ export default function BrandPage({ brand, state, actions, weekStart, onWeek }) 
       <main className={'brand-' + brand}>
         {AREAS.map((a) => (
           <section className="area" key={a.id}>
-            <div className="area-head"><h2>{a.name}</h2><span>{a.sub}</span></div>
+            <Cmt className="area-head" anchor={'area:' + a.id} label={`${wk} · ${a.name}`}><h2>{a.name}</h2><span>{a.sub}</span></Cmt>
             <div className="tw">
               <table>
                 <thead>
@@ -31,16 +33,16 @@ export default function BrandPage({ brand, state, actions, weekStart, onWeek }) 
                 </thead>
                 <tbody>
                   {a.metrics.map((m) => (
-                    <MetricRows key={m.id} state={state} actions={actions} b={brand} m={m} wd={wd} today={today} weekStart={weekStart} />
+                    <MetricRows key={m.id} state={state} actions={actions} b={brand} m={m} wd={wd} today={today} weekStart={weekStart} wk={wk} />
                   ))}
                 </tbody>
               </table>
             </div>
-            <FocusBlock state={state} actions={actions} b={brand} area={a} weekStart={weekStart} />
+            <FocusBlock state={state} actions={actions} b={brand} area={a} weekStart={weekStart} wk={wk} />
           </section>
         ))}
         <section className="area">
-          <div className="notes">
+          <Cmt className="notes" anchor="notes" label={`${wk} · Anotações da semana`}>
             <label htmlFor="note">Anotações da semana</label>
             <textarea
               id="note"
@@ -48,7 +50,7 @@ export default function BrandPage({ brand, state, actions, weekStart, onWeek }) 
               value={note}
               onChange={(e) => actions.setNote(brand, weekStart, e.target.value)}
             />
-          </div>
+          </Cmt>
         </section>
         <UgcSection brand={brand} state={state} actions={actions} />
       </main>

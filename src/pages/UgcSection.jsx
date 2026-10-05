@@ -1,4 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Cmt } from '../components/Comments'
+import DatePicker from '../components/DatePicker'
 import { addDays, iso, nf, parse, todayIso } from '../lib/dates'
 
 const FIELDS = [
@@ -358,20 +360,20 @@ export default function UgcSection({ brand, state, actions }) {
         <span>rede de {accounts.length} contas · {brandName}</span>
         <div className="ugc-bar">
           <button className="btn icon" onClick={() => setDate(dayBefore(date))} aria-label="Dia anterior">‹</button>
-          <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} aria-label="Dia do UGC" />
+          <DatePicker value={date} onChange={setDate} label="Dia do UGC" align="right" />
           <button className="btn icon" onClick={() => setDate(dayBefore(date, -1))} aria-label="Próximo dia">›</button>
           {date !== todayIso() && <button className="btn" onClick={() => setDate(todayIso())}>Hoje</button>}
           <button className="btn primary" onClick={addAccount}>+ Nova conta</button>
         </div>
       </div>
 
-      <div className="kpis">
+      <Cmt className="kpis" anchor={'ugc:' + date} label={`${brandName} · UGC · ${date.slice(8)}/${date.slice(5, 7)}`}>
         <div className="kpi"><small>Seguidores</small><b>{nf(totals.followers)}</b>{fDelta != null && <Delta now={fDelta} prev={0} />}</div>
         <div className="kpi"><small>Views no dia</small><b>{nf(totals.views)}</b>{vDelta != null && <Delta now={vDelta} prev={0} />}</div>
         <div className="kpi"><small>Posts</small><b>{nf(sumField('posts'))}</b></div>
         <div className="kpi"><small>Leads</small><b>{nf(sumField('leads'))}</b></div>
         <div className="kpi"><small>Engajamento</small><b>{nf(sumField('engagement'))}</b></div>
-      </div>
+      </Cmt>
 
       <Graph rows={rows} totals={totals} brandName={brandName} brand={brand} date={date} state={state} actions={actions} openId={openId} setOpenId={setOpenId} />
     </section>

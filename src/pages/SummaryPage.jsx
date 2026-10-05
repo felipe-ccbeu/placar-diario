@@ -1,3 +1,5 @@
+import { Cmt } from '../components/Comments'
+import DatePicker from '../components/DatePicker'
 import { fmt, monthPeriod, ratio, total } from '../lib/calc'
 import { BNAME, BRANDS, METRIC } from '../lib/constants'
 import { monthLabel } from '../lib/dates'
@@ -23,7 +25,7 @@ function Delta({ now, prev, m, prevName }) {
   )
 }
 
-function Card({ state, b, id, p, small }) {
+function Card({ state, b, id, p, small, ml }) {
   const m = METRIC[id]
   const now = valueOf(state, b, m, p.cur)
   const prev = valueOf(state, b, m, p.prevSame)
@@ -34,7 +36,7 @@ function Card({ state, b, id, p, small }) {
   const prevName = monthLabel(p.prev)
 
   return (
-    <div className={'scard ' + status + (small ? ' small' : '')}>
+    <Cmt className={'scard ' + status + (small ? ' small' : '')} anchor={`card:${b}:${id}`} label={`Resumo · ${BNAME[b]} · ${m.label} · ${ml}`}>
       <small>{m.label}</small>
       <b className="sval">{now === null ? '—' : fmt(m, now)}</b>
       {goal > 0 && (
@@ -50,7 +52,7 @@ function Card({ state, b, id, p, small }) {
         <span className="sline">Projeção do mês: <b className={status}>{fmt(m, proj)}</b></span>
       )}
       <Delta now={now} prev={prev} m={m} prevName={prevName} />
-    </div>
+    </Cmt>
   )
 }
 
@@ -65,17 +67,17 @@ export default function SummaryPage({ state, month, onMonth }) {
   return (
     <main>
       <div className="pbar">
-        <label>Mês <input type="month" value={month} onChange={(e) => e.target.value && onMonth(e.target.value)} /></label>
+        <DatePicker month value={month} onChange={onMonth} label="Escolher mês" />
         <p>{p.elapsed ? note : `${ml} ainda não começou.`}</p>
       </div>
       {p.elapsed > 0 && BRANDS.map((b) => (
         <section className={'area brand-' + b} key={b}>
           <div className="area-head"><h2>{BNAME[b]}</h2><span>{ml}</span></div>
           <div className="sgrid">
-            {MAIN.map((id) => <Card key={id} state={state} b={b} id={id} p={p} />)}
+            {MAIN.map((id) => <Card key={id} state={state} b={b} id={id} p={p} ml={ml} />)}
           </div>
           <div className="sgrid">
-            {MONEY.map((id) => <Card key={id} state={state} b={b} id={id} p={p} small />)}
+            {MONEY.map((id) => <Card key={id} state={state} b={b} id={id} p={p} ml={ml} small />)}
           </div>
         </section>
       ))}

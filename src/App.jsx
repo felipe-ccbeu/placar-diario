@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CommentsDrawer, CommentsProvider } from './components/Comments'
 import Header from './components/Header'
 import Toast from './components/Toast'
 import { usePlacar } from './hooks/usePlacar'
@@ -17,8 +18,17 @@ function Placar({ role, onLeave }) {
   const [weekStart, setWeekStart] = useState(() => iso(mondayOf(new Date())))
   const [month, setMonth] = useState(() => todayIso().slice(0, 7))
 
+  // Tela atual para os comentários: aba + semana (marcas) ou aba + mês (Pareto/Resumo)
+  const view = BRANDS.includes(tab) ? tab + '|' + weekStart : tab === 'PARETO' || tab === 'RESUMO' ? tab + '|' + month : null
+  const goTo = (v) => {
+    const [t, period] = v.split('|')
+    setTab(t)
+    if (BRANDS.includes(t)) setWeekStart(period)
+    else setMonth(period)
+  }
+
   return (
-    <>
+    <CommentsProvider role={role} view={ready ? view : null} onGo={goTo} toast={actions.toast}>
       <div className={'wrap' + (role === 'viewer' ? ' viewer' : '')}>
         <Header tab={tab} onTab={setTab} role={role} sync={sync} onLeave={onLeave} />
         {!ready && <p className="empty">Carregando…</p>}
@@ -35,8 +45,9 @@ function Placar({ role, onLeave }) {
         {ready && tab === 'RESUMO' && <SummaryPage state={state} month={month} onMonth={setMonth} />}
         {ready && tab === 'CFG' && role === 'editor' && <SettingsPage state={state} actions={actions} />}
       </div>
+      <CommentsDrawer />
       <Toast message={message} />
-    </>
+    </CommentsProvider>
   )
 }
 
