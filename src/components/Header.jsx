@@ -4,7 +4,6 @@ const TABS = [
   { id: 'PARETO', label: 'Pareto do mês' },
   { id: 'RESUMO', label: 'Resumo' },
   { id: 'CFG', label: 'Ajustes', editorOnly: true },
-  { id: 'ADMIN', label: 'Admin', editorOnly: true },
 ]
 
 const SYNC = { saving: 'Salvando…', saved: 'Salvo', error: 'Erro ao salvar' }

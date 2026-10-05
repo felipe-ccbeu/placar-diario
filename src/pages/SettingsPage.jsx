@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BNAME, BRANDS } from '../lib/constants'
 import { todayIso } from '../lib/dates'
+import ApiTokens from '../components/ApiTokens'
 
 const toLines = (text) => [...new Set(text.split('\n').map((s) => s.trim()).filter(Boolean))]
 
@@ -102,6 +103,7 @@ function SettingsForm({ state, actions }) {
           <button className="btn danger" onClick={wipe}>Apagar todos os dados</button>
         </div>
       </section>
+      <ApiTokens toast={actions.toast} />
     </main>
   )
 }

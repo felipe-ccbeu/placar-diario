@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import AdminPage from './pages/AdminPage'
 import Header from './components/Header'
 import Toast from './components/Toast'
 import { usePlacar } from './hooks/usePlacar'
@@ -35,7 +34,6 @@ function Placar({ role, onLeave }) {
         {ready && tab === 'PARETO' && <ParetoPage state={state} actions={actions} month={month} onMonth={setMonth} />}
         {ready && tab === 'RESUMO' && <SummaryPage state={state} month={month} onMonth={setMonth} />}
         {ready && tab === 'CFG' && role === 'editor' && <SettingsPage state={state} actions={actions} />}
-        {ready && tab === 'ADMIN' && role === 'editor' && <AdminPage actions={actions} />}
       </div>
       <Toast message={message} />
     </>

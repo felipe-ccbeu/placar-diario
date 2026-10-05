@@ -1,6 +1,6 @@
 # API do Placar: continuar daqui
 
-Objetivo: o Claude de outros repositórios conseguir **ler, criar, editar e apagar** dados do placar publicado, usando um token gerado na aba **Admin**.
+Objetivo: o Claude de outros repositórios conseguir **ler, criar, editar e apagar** dados do placar publicado, usando um token gerado na aba **Ajustes**.
 
 ## Onde paramos (04/10/2026)
 
@@ -44,7 +44,7 @@ git push
 
 ## 3. Gerar o primeiro token
 
-No site publicado: entre como Felipe → aba **Admin** → dê um nome (ex.: `repo-teste`) → **Gerar token** → **Copiar**.
+No site publicado: entre como Felipe → aba **Ajustes** → dê um nome (ex.: `repo-teste`) → **Gerar token** → **Copiar**.
 
 O token (`plc_...`) só aparece **uma vez**. Se perder, revogue e gere outro.
 
@@ -157,12 +157,12 @@ curl $SITE/api                                                        # sem toke
 
 O `|` das chaves vira `%7C` na URL.
 
-Depois, confira na aba Admin se a coluna **Último uso** mudou, e no site se o número apareceu.
+Depois, confira na aba Ajustes se a coluna **Último uso** mudou, e no site se o número apareceu.
 
 ## 7. Configurar os outros repositórios
 
 Em cada repositório que vai usar a API:
-1. Gere um token **próprio** na aba Admin, com o nome do repositório.
+1. Gere um token **próprio** na aba Ajustes, com o nome do repositório.
 2. Coloque no `.env` desse repositório (fora do git): `PLACAR_TOKEN=plc_...`
 3. Adicione ao `CLAUDE.md` dele:
 
@@ -181,7 +181,7 @@ Codifique `|` como `%7C`. Prefira PATCH para não apagar campos existentes.
 
 | Coisa | Onde |
 |---|---|
-| Gerar/revogar token | Site → aba **Admin** |
+| Gerar/revogar token | Site → aba **Ajustes** |
 | Tabela de tokens | Supabase → `api_tokens` |
 | Dados do placar | Supabase → `placar` (linha `id = main`, coluna `data`) |
 | Segredos do Worker | Cloudflare → Workers → placar-diario → Settings |
