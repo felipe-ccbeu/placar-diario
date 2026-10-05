@@ -33,3 +33,11 @@ export const monthLabel = (m, long) => {
 }
 export const ddmm = (s) => s.slice(8) + '/' + s.slice(5, 7)
 export const nf = (n) => Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 1 })
+export const brl = (n) => {
+  const d = Math.abs(n) < 100 ? 2 : 0
+  return Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: d, maximumFractionDigits: d })
+}
+export const prevMonth = (m) => {
+  const [y, mo] = m.split('-').map(Number)
+  return iso(new Date(y, mo - 2, 15)).slice(0, 7)
+}

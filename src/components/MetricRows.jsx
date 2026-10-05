@@ -1,4 +1,4 @@
-import { originsFor, summary, val } from '../lib/calc'
+import { fmt, originsFor, ratio, summary, val } from '../lib/calc'
 import { ddmm, nf } from '../lib/dates'
 
 function LabelCell({ m, extra }) {
@@ -8,6 +8,7 @@ function LabelCell({ m, extra }) {
         {m.label}
         {m.top && <span className="pill">principal</span>}
         {m.weekly && <span className="pill wk">semanal</span>}
+        {m.type === 'ratio' && <span className="pill wk">automático</span>}
       </b>
       <span className="hint">{extra || m.hint}</span>
     </td>
@@ -22,7 +23,7 @@ function SummaryCells({ state, b, m, origin = '', weekStart }) {
   if (!origin && m.goal) {
     const goal = Number(state.config[b].goals[m.goal]) || 0
     if (goal > 0) {
-      monthText = `${s.m} de ${nf(goal)}`
+      monthText = `${s.m} de ${fmt(m, goal)}`
       if (s.frac > 0) cls = s.mRaw >= goal * s.frac ? 'good' : 'bad'
       title = 'Verde: no ritmo da meta do mês até hoje. Laranja: abaixo do ritmo.'
     }
@@ -36,9 +37,19 @@ function SummaryCells({ state, b, m, origin = '', weekStart }) {
   )
 }
 
-function NumInput({ value, label, onChange }) {
+function NumInput({ value, label, money, onChange }) {
   return (
-    <input className="num" type="number" min="0" inputMode="numeric" value={value} aria-label={label} onChange={(e) => onChange(e.target.value)} />
+    <input
+      className={'num' + (money ? ' money' : '')}
+      type="number"
+      min="0"
+      step={money ? 'any' : undefined}
+      inputMode={money ? 'decimal' : 'numeric'}
+      placeholder={money ? 'R$' : undefined}
+      value={value}
+      aria-label={label}
+      onChange={(e) => onChange(e.target.value)}
+    />
   )
 }
 
@@ -51,7 +62,7 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart 
         <LabelCell m={m} />
         {wd.map((d) => (
           <td key={d} className={tc(d)}>
-            <NumInput value={val(state, b, d, m)} label={`${m.label} ${ddmm(d)}`} onChange={(v) => actions.setNumber(b, d, m, '', v)} />
+            <NumInput value={val(state, b, d, m)} label={`${m.label} ${ddmm(d)}`} money={m.money} onChange={(v) => actions.setNumber(b, d, m, '', v)} />
           </td>
         ))}
         <SummaryCells state={state} b={b} m={m} weekStart={weekStart} />
@@ -83,6 +94,19 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart 
           </tr>
         ))}
       </>
+    )
+  }
+
+  if (m.type === 'ratio') {
+    return (
+      <tr className="derived">
+        <LabelCell m={m} />
+        {wd.map((d) => {
+          const v = ratio(state, b, m, [d])
+          return <td key={d} className={'calc ' + tc(d)}>{v === null ? '' : fmt(m, v)}</td>
+        })}
+        <SummaryCells state={state} b={b} m={m} weekStart={weekStart} />
+      </tr>
     )
   }
 

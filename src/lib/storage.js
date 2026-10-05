@@ -6,8 +6,8 @@ export function defaults() {
   return {
     version: 2,
     config: {
-      VIVR: { origins: ['Orgânico', 'Meta B2C', 'Meta B2B', 'Indicação'], objections: ['Preço', 'Sem tempo para estudar', 'Dúvida sobre o app', 'Falha técnica'], goals: { views: 0, leads: 0, sales: 0 } },
-      SKOLEN: { origins: ['Orgânico', 'Meta', 'CNAE', 'Indicação'], objections: ['Preço', 'Já usa outro sistema', 'Falta funcionalidade', 'Falha técnica'], goals: { views: 0, leads: 0, sales: 0 } },
+      VIVR: { origins: ['Orgânico', 'Meta B2C', 'Meta B2B', 'Indicação'], objections: ['Preço', 'Sem tempo para estudar', 'Dúvida sobre o app', 'Falha técnica'], goals: { views: 0, leads: 0, sales: 0, revenue: 0 } },
+      SKOLEN: { origins: ['Orgânico', 'Meta', 'CNAE', 'Indicação'], objections: ['Preço', 'Já usa outro sistema', 'Falta funcionalidade', 'Falha técnica'], goals: { views: 0, leads: 0, sales: 0, revenue: 0 } },
     },
     days: {}, weeks: {}, obj: {},
     accounts: defaultAccounts(), acc: {},

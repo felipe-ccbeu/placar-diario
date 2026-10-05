@@ -27,7 +27,6 @@ export default function LoginGate({ onEditor, onViewer }) {
     <div className="gate">
       <span className="gate-blob a" aria-hidden="true" />
       <span className="gate-blob b" aria-hidden="true" />
-      <span className="gate-blob c" aria-hidden="true" />
 
       <div className="gate-inner">
         <div className="gate-hero">

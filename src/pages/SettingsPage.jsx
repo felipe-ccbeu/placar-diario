@@ -81,7 +81,7 @@ function SettingsForm({ state, actions }) {
             </div>
             <div>
               <label>Metas do mês</label>
-              {[['views', 'Views'], ['leads', 'Leads'], ['sales', 'Vendas']].map(([g, label]) => (
+              {[['views', 'Views'], ['leads', 'Leads'], ['sales', 'Vendas'], ['revenue', 'Faturamento (R$)']].map(([g, label]) => (
                 <div key={g}>
                   <label className="goal-l" htmlFor={`g-${g}-${b}`}>{label}</label>
                   <input id={`g-${g}-${b}`} type="number" min="0" value={draft[b].goals[g] || ''} onChange={(e) => setGoal(b, g, e.target.value)} />

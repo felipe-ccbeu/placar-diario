@@ -1,4 +1,36 @@
-import { monthDates, monthOfWeek, nf, parse, todayIso, weekDates } from './dates'
+import { METRIC } from './constants'
+import { brl, monthDates, monthOfWeek, nf, parse, prevMonth, todayIso, weekDates } from './dates'
+
+export const fmt = (m, n) => (m.money ? brl(n) : m.unit === 'x' ? nf(n) + 'x' : nf(n))
+
+// Soma de uma métrica numérica (ou de todas as origens) nas datas; null se nada foi lançado
+export function total(state, b, id, dates) {
+  const m = METRIC[id]
+  let sum = null
+  for (const d of dates) {
+    const v = val(state, b, d, m)
+    if (v !== '') sum = (sum ?? 0) + Number(v)
+  }
+  return sum
+}
+
+// Métrica calculada (ex.: investido ÷ leads); null quando falta numerador ou o divisor é zero
+export function ratio(state, b, m, dates) {
+  const n = total(state, b, m.num, dates)
+  const d = total(state, b, m.den, dates)
+  return n === null || !d ? null : n / d
+}
+
+// Dias do mês até hoje e o mesmo trecho do mês anterior, para projeção e comparação
+export function monthPeriod(month) {
+  const md = monthDates(month)
+  const t = todayIso()
+  const elapsed = md.filter((d) => d <= t).length
+  const prev = prevMonth(month)
+  const pd = monthDates(prev)
+  const done = elapsed === md.length
+  return { md, cur: md.slice(0, elapsed), elapsed, days: md.length, done, prev, prevSame: done ? pd : pd.slice(0, elapsed) }
+}
 
 export function val(state, b, date, m, origin) {
   const d = state.days[b + '|' + date]
@@ -29,6 +61,12 @@ export function summary(state, b, m, origin, weekStart) {
   const t = todayIso()
   const mEl = md.filter((d) => d <= t).length
   const frac = mEl / md.length
+  const f = (n) => fmt(m, n)
+  if (m.type === 'ratio') {
+    const w = ratio(state, b, m, wd)
+    const mo = ratio(state, b, m, md)
+    return { w: w === null ? '—' : f(w), m: mo === null ? '—' : f(mo), a: '—' }
+  }
   if (m.type === 'bool' && !m.weekly) {
     const wOn = wd.filter((d) => val(state, b, d, m)).length
     const wEl = wd.filter((d) => d <= t).length
@@ -44,9 +82,9 @@ export function summary(state, b, m, origin, weekStart) {
   const wv = wd.map((d) => val(state, b, d, m, origin)).filter((x) => x !== '').map(Number)
   const mv = md.map((d) => val(state, b, d, m, origin)).filter((x) => x !== '').map(Number)
   const sum = (a) => a.reduce((x, y) => x + y, 0)
-  const avg = mv.length ? nf(sum(mv) / mv.length) : '—'
-  if (m.agg === 'last') return { w: wv.length ? nf(wv.at(-1)) : '—', m: mv.length ? nf(mv.at(-1)) : '—', a: avg }
-  return { w: nf(sum(wv)), m: nf(sum(mv)), mRaw: sum(mv), a: avg, frac }
+  const avg = mv.length ? f(sum(mv) / mv.length) : '—'
+  if (m.agg === 'last') return { w: wv.length ? f(wv.at(-1)) : '—', m: mv.length ? f(mv.at(-1)) : '—', a: avg }
+  return { w: f(sum(wv)), m: f(sum(mv)), mRaw: sum(mv), a: avg, frac }
 }
 
 export function toItems(obj) {
@@ -62,11 +100,15 @@ export function toItems(obj) {
   return items
 }
 
-export function aggregate(state, b, metricId, month) {
+export function originTotals(state, b, metricId, month) {
   const tot = {}
   for (const d of monthDates(month)) {
     const g = state.days[b + '|' + d]?.[metricId]
     if (g) for (const [k, v] of Object.entries(g)) tot[k] = (tot[k] || 0) + Number(v)
   }
-  return toItems(tot)
+  return tot
+}
+
+export function aggregate(state, b, metricId, month) {
+  return toItems(originTotals(state, b, metricId, month))
 }

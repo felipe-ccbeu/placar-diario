@@ -12,6 +12,8 @@ export const AREAS = [
   ] },
   { id: 'trafego', name: 'Tráfego', sub: 'Anúncios no Meta', metrics: [
     { id: 'leads', label: 'Leads', hint: 'total do dia', type: 'group', top: true, goal: 'leads' },
+    { id: 'ad_spend', label: 'Investido no Meta', hint: 'R$ gastos no dia', type: 'number', money: true },
+    { id: 'cpl', label: 'Custo por lead', hint: 'investido ÷ leads', type: 'ratio', num: 'ad_spend', den: 'leads', money: true, lowerBetter: true },
     { id: 'ads_running', label: 'Anúncio rodando?', hint: 'checagem diária', type: 'bool' },
     { id: 'lp_ok', label: 'LP correta?', hint: 'link, oferta e formulário', type: 'bool' },
     { id: 'insights', label: 'Insights revisados?', hint: 'marcar na sexta', type: 'bool', weekly: true },
@@ -19,6 +21,9 @@ export const AREAS = [
   ] },
   { id: 'vendas', name: 'Vendas', sub: 'Clientes fechados', metrics: [
     { id: 'sales', label: 'Vendas', hint: 'total do dia', type: 'group', top: true, goal: 'sales' },
+    { id: 'revenue', label: 'Faturamento', hint: 'R$ vendido no dia', type: 'number', money: true, top: true, goal: 'revenue' },
+    { id: 'cpa', label: 'Custo por venda', hint: 'investido ÷ vendas (todas as origens)', type: 'ratio', num: 'ad_spend', den: 'sales', money: true, lowerBetter: true },
+    { id: 'roas', label: 'Retorno do anúncio', hint: 'faturamento ÷ investido', type: 'ratio', num: 'revenue', den: 'ad_spend', unit: 'x' },
     { id: 'ai_running', label: 'IA rodando?', hint: 'atendimento automático ativo', type: 'bool' },
     { id: 'imp_vendas', label: 'Melhoria implementada?', hint: 'marcar na sexta', type: 'bool', weekly: true },
   ] },

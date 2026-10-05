@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AdminPage from './pages/AdminPage'
 import Header from './components/Header'
 import Toast from './components/Toast'
 import { usePlacar } from './hooks/usePlacar'
@@ -9,12 +10,13 @@ import BrandPage from './pages/BrandPage'
 import LoginGate from './pages/LoginGate'
 import ParetoPage from './pages/ParetoPage'
 import SettingsPage from './pages/SettingsPage'
+import SummaryPage from './pages/SummaryPage'
 
 function Placar({ role, onLeave }) {
   const { state, actions, message, ready, loadError, sync } = usePlacar(role)
   const [tab, setTab] = useState('VIVR')
   const [weekStart, setWeekStart] = useState(() => iso(mondayOf(new Date())))
-  const [paretoMonth, setParetoMonth] = useState(() => todayIso().slice(0, 7))
+  const [month, setMonth] = useState(() => todayIso().slice(0, 7))
 
   return (
     <>
@@ -30,8 +32,10 @@ function Placar({ role, onLeave }) {
         {ready && BRANDS.includes(tab) && (
           <BrandPage brand={tab} state={state} actions={actions} weekStart={weekStart} onWeek={setWeekStart} />
         )}
-        {ready && tab === 'PARETO' && <ParetoPage state={state} actions={actions} month={paretoMonth} onMonth={setParetoMonth} />}
+        {ready && tab === 'PARETO' && <ParetoPage state={state} actions={actions} month={month} onMonth={setMonth} />}
+        {ready && tab === 'RESUMO' && <SummaryPage state={state} month={month} onMonth={setMonth} />}
         {ready && tab === 'CFG' && role === 'editor' && <SettingsPage state={state} actions={actions} />}
+        {ready && tab === 'ADMIN' && role === 'editor' && <AdminPage actions={actions} />}
       </div>
       <Toast message={message} />
     </>

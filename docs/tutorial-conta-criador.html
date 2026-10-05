@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Virar conta de Criador</title>
+<title>Instagram no Placar</title>
 <style>
   :root {
     --bg: #f7f6f3;
@@ -86,6 +86,30 @@
     border-radius: 12px; padding: 14px 18px; margin-top: 16px;
   }
   .note p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 56px 0 0; }
+  .eyebrow { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 40px 0 4px; }
+  .card + .card { margin-top: 12px; }
+  .card h3 { font-size: 1rem; margin: 0 0 6px; }
+  .card p, .card ul { color: var(--muted); }
+  .card ul { margin: 6px 0 0; padding-left: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  code { font: .88em ui-monospace, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+  .prompt { position: relative; }
+  .prompt pre {
+    margin: 0; white-space: pre-wrap; word-wrap: break-word;
+    font: .88rem/1.55 ui-monospace, Consolas, monospace;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 48px 20px 20px;
+  }
+  .prompt button {
+    position: absolute; top: 10px; right: 10px;
+    font: inherit; font-size: .85rem; cursor: pointer;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px;
+  }
   ul.check { padding-left: 20px; margin: 0; }
   ul.check li { margin: 4px 0; }
   .muted { color: var(--muted); }
@@ -169,7 +193,95 @@
     <p style="margin:0">Quando todas as contas estiverem como Criador, avise no grupo. O próximo passo é conectar cada conta ao Placar Diário para que os dados apareçam automaticamente.</p>
   </div>
 
-  <footer>Placar Diário · tutorial interno</footer>
+  <hr>
+
+  <p class="eyebrow">Parte 2</p>
+  <h1>O que vamos fazer com isso</h1>
+  <p class="lead">Com as contas como Criador, o Placar Diário passa a buscar os dados direto do Instagram. Cada conta UGC ganha um preview com seguidores, últimas postagens e o desempenho de cada post, sem ninguém precisar digitar.</p>
+
+  <h2>Como vai funcionar no dia a dia</h2>
+  <div class="card">
+    <h3>1. Conectar cada conta uma única vez</h3>
+    <p style="margin:0">No card da conta, na seção UGC, aparece o botão <b>Conectar Instagram</b>. Ele leva para a tela de login do próprio Instagram. Você entra com aquela conta e autoriza, e pronto. O Placar nunca vê a senha.</p>
+  </div>
+  <div class="card">
+    <h3>2. O Placar atualiza sozinho</h3>
+    <p style="margin:0">Algumas vezes por dia o servidor busca os dados novos de todas as contas conectadas. O acesso de cada conta vale 60 dias, e o próprio servidor renova antes de vencer.</p>
+  </div>
+  <div class="card">
+    <h3>3. Todo mundo vê o preview</h3>
+    <p style="margin:0">Quem abre o Placar, incluindo o acesso só de leitura do Renato, vê os previews. Conectar e desconectar contas continua sendo só para quem faz login.</p>
+  </div>
+
+  <h2>O que aparece em cada conta</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Informação</th><th>Detalhe</th></tr></thead>
+      <tbody>
+        <tr><td>Perfil</td><td>Foto, @, seguidores, total de posts</td></tr>
+        <tr><td>Últimas postagens</td><td>Grade com os 12 posts mais recentes: miniatura, data, tipo (foto, carrossel, reels)</td></tr>
+        <tr><td>Desempenho do post</td><td>Views, alcance, curtidas, comentários, salvamentos e compartilhamentos, com link para abrir no Instagram</td></tr>
+        <tr><td>Números do dia</td><td>Seguidores e views do dia preenchidos automaticamente no card, no lugar da digitação manual</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>O que muda no sistema</h2>
+  <div class="card">
+    <h3>Na Meta (configuração única)</h3>
+    <ul>
+      <li>Criar um app em developers.facebook.com com o produto <b>Instagram API com login do Instagram</b>.</li>
+      <li>Deixar em modo de desenvolvimento e adicionar cada conta UGC como <b>testadora</b>. Como as contas são nossas, não precisa passar pela análise da Meta.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>No Supabase (servidor)</h3>
+    <ul>
+      <li><b>Tabela <code>ig_tokens</code></b>: guarda o acesso de cada conta. Fica fechada, nem o navegador consegue ler.</li>
+      <li><b>Tabela <code>ig_snapshots</code></b>: guarda o último retrato de cada conta (perfil, posts e números). Leitura liberada, como o resto do Placar.</li>
+      <li><b>Função <code>ig-connect</code></b>: recebe a volta do login do Instagram e salva o acesso da conta.</li>
+      <li><b>Função <code>ig-sync</code></b>: roda a cada 3 horas, renova acessos perto de vencer e atualiza os retratos.</li>
+      <li>A chave secreta do app da Meta fica só nos segredos do Supabase, nunca no código do site.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>No site (seção UGC)</h3>
+    <ul>
+      <li>Botão <b>Conectar Instagram</b> e indicador “conectado / desconectado” em cada card.</li>
+      <li>Card aberto ganha o preview: perfil, grade de posts e números de cada post.</li>
+      <li>Seguidores e views do dia vêm do Instagram. O campo manual continua existindo e, se for preenchido, tem prioridade.</li>
+      <li>Contas não conectadas continuam funcionando exatamente como hoje.</li>
+    </ul>
+  </div>
+
+  <h2>Prompt para implementar</h2>
+  <p class="muted" style="margin:0 0 12px">Cole no Claude Code dentro do projeto quando todas as contas já forem Criador.</p>
+  <div class="prompt">
+    <button type="button" onclick="copyPrompt(this)">Copiar</button>
+<pre id="prompt">Quero integrar o Instagram na seção UGC do Placar Diário (src/pages/UgcSection.jsx). As contas UGC já são contas de Criador.
+
+Objetivo: cada conta UGC mostra um preview com foto, @, seguidores, os 12 posts mais recentes e o desempenho de cada post (views, alcance, curtidas, comentários, salvamentos, compartilhamentos), atualizado automaticamente.
+
+Como fazer:
+1. Usar a Instagram API com login do Instagram (sem Página do Facebook). O app da Meta fica em modo de desenvolvimento com as contas como testadoras.
+2. Supabase: nova migration com a tabela ig_tokens (sem nenhuma policy pública) e a tabela ig_snapshots (leitura pública, escrita só pelo servidor), ligadas à conta UGC por marca + id da conta.
+3. Edge Function ig-connect: callback do OAuth, troca o código por token de longa duração e salva em ig_tokens.
+4. Edge Function ig-sync: agendada a cada 3 horas (pg_cron), renova tokens perto de vencer e grava perfil, posts e insights em ig_snapshots.
+5. No site: botão "Conectar Instagram" (só para quem está logado), preview no card aberto e seguidores/views do dia vindos do Instagram quando não houver valor digitado à mão.
+
+Regras: o app secret e os tokens nunca vão para o navegador. Não mudar o formato da linha 'main' da tabela placar. Contas não conectadas continuam funcionando como hoje.
+
+Antes de escrever código, me mostre o plano e a lista do que eu preciso configurar na Meta e no Supabase.</pre>
+  </div>
+
+  <footer>Placar Diário · documento interno</footer>
 </main>
+<script>
+  function copyPrompt(btn) {
+    var text = document.getElementById('prompt').innerText;
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+  }
+</script>
 </body>
 </html>
