@@ -1,4 +1,5 @@
 import { fmt, originsFor, ratio, summary, val } from '../lib/calc'
+import { METRIC } from '../lib/constants'
 import { DAYN, ddmm, nf } from '../lib/dates'
 import { Cmt } from './Comments'
 
@@ -13,7 +14,7 @@ function LabelCell({ m, extra, origin, wk }) {
         {m.label}
         {m.top && <span className="pill">principal</span>}
         {m.weekly && <span className="pill wk">semanal</span>}
-        {m.type === 'ratio' && <span className="pill wk">automático</span>}
+        {(m.type === 'ratio' || m.type === 'sum') && <span className="pill wk">automático</span>}
       </b>
       <span className="hint">{extra || m.hint}</span>
     </Cmt>
@@ -74,7 +75,7 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart,
 
   if (m.type === 'number') {
     return (
-      <tr className={m.top ? 'top' : ''}>
+      <tr className={m.top ? 'top' : m.part ? 'sub' : ''}>
         <LabelCell m={m} wk={wk} />
         {wd.map((d) => (
           <DayCell key={d} {...cell(d)}>
@@ -108,6 +109,24 @@ export default function MetricRows({ state, actions, b, m, wd, today, weekStart,
             ))}
             <SummaryCells state={state} b={b} m={m} origin={o} weekStart={weekStart} wk={wk} />
           </tr>
+        ))}
+      </>
+    )
+  }
+
+  if (m.type === 'sum') {
+    return (
+      <>
+        <tr className="top">
+          <LabelCell m={m} wk={wk} />
+          {wd.map((d) => {
+            const v = val(state, b, d, m)
+            return <DayCell key={d} {...cell(d)} className="calc">{v === '' ? '' : nf(v)}</DayCell>
+          })}
+          <SummaryCells state={state} b={b} m={m} weekStart={weekStart} wk={wk} />
+        </tr>
+        {m.parts.map((p) => (
+          <MetricRows key={p} state={state} actions={actions} b={b} m={METRIC[p]} wd={wd} today={today} weekStart={weekStart} wk={wk} />
         ))}
       </>
     )

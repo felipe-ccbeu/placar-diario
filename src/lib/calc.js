@@ -43,6 +43,11 @@ export function val(state, b, date, m, origin) {
     const vs = Object.values(g)
     return vs.length ? vs.reduce((a, x) => a + Number(x), 0) : ''
   }
+  // Soma das partes (ex.: views Instagram + TikTok); sem partes lançadas, vale o total antigo gravado direto
+  if (m.type === 'sum') {
+    const vs = m.parts.map((p) => d[p]).filter((x) => x !== undefined && x !== '')
+    return vs.length ? vs.reduce((a, x) => a + Number(x), 0) : d[m.id] ?? ''
+  }
   return d[m.id] ?? ''
 }
 

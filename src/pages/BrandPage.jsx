@@ -32,7 +32,7 @@ export default function BrandPage({ brand, state, actions, weekStart, onWeek }) 
                   </tr>
                 </thead>
                 <tbody>
-                  {a.metrics.map((m) => (
+                  {a.metrics.filter((m) => !m.part).map((m) => (
                     <MetricRows key={m.id} state={state} actions={actions} b={brand} m={m} wd={wd} today={today} weekStart={weekStart} wk={wk} />
                   ))}
                 </tbody>

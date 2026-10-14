@@ -7,7 +7,9 @@ export const AREAS = [
     { id: 'reels', label: 'Reels', hint: 'publicados', type: 'number' },
     { id: 'stories', label: 'Stories', hint: 'publicados', type: 'number' },
     { id: 'tiktok', label: 'TikTok', hint: 'vídeos publicados', type: 'number' },
-    { id: 'views', label: 'Views', hint: 'visualizações do dia', type: 'number', top: true, goal: 'views' },
+    { id: 'views', label: 'Views', hint: 'Instagram + TikTok', type: 'sum', parts: ['views_ig', 'views_tt'], top: true, goal: 'views' },
+    { id: 'views_ig', label: 'Instagram', hint: 'views do dia', type: 'number', part: true },
+    { id: 'views_tt', label: 'TikTok', hint: 'views do dia', type: 'number', part: true },
     { id: 'imp_alcance', label: 'Melhoria implementada?', hint: 'marcar na sexta', type: 'bool', weekly: true },
   ] },
   { id: 'trafego', name: 'Tráfego', sub: 'Anúncios no Meta', metrics: [
