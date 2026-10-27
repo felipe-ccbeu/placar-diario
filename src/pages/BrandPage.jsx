@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import AreaChart from '../components/AreaChart'
 import { Cmt } from '../components/Comments'
 import FocusBlock from '../components/FocusBlock'
 import MetricRows from '../components/MetricRows'
@@ -7,6 +9,7 @@ import { AREAS, BNAME } from '../lib/constants'
 import { DAYN, ddmm, monthLabel, monthOfWeek, todayIso, weekDates } from '../lib/dates'
 
 export default function BrandPage({ brand, state, actions, weekStart, onWeek }) {
+  const [charts, setCharts] = useState({})
   const wd = weekDates(weekStart)
   const today = todayIso()
   const month = monthOfWeek(weekStart)
@@ -19,8 +22,27 @@ export default function BrandPage({ brand, state, actions, weekStart, onWeek }) 
       <main className={'brand-' + brand}>
         {AREAS.map((a) => (
           <section className="area" key={a.id}>
+            <div className="area-bar">
             <Cmt className="area-head" anchor={'area:' + a.id} label={`${wk} · ${a.name}`}><h2>{a.name}</h2><span>{a.sub}</span></Cmt>
-            <div className="tw">
+            {[
+              ['bars', 'Ver gráfico de barras', <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />],
+              ...(a.metrics.some((m) => m.id === 'active_accounts')
+                ? [['rel', 'Ver relação entre contas, stories e reels', <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />]]
+                : []),
+            ].map(([v, label, icon]) => (
+              <button
+                key={v}
+                className={'chart-toggle' + (charts[a.id] === v ? ' on' : '')}
+                aria-pressed={charts[a.id] === v}
+                aria-label={charts[a.id] === v ? 'Ver tabela' : label}
+                title={charts[a.id] === v ? 'Ver tabela' : label}
+                onClick={() => setCharts((c) => ({ ...c, [a.id]: c[a.id] === v ? null : v }))}
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+              </button>
+            ))}
+            </div>
+            {charts[a.id] ? <AreaChart state={state} b={brand} area={a} wd={wd} today={today} view={charts[a.id]} /> : <div className="tw">
               <table>
                 <thead>
                   <tr>
@@ -37,7 +59,7 @@ export default function BrandPage({ brand, state, actions, weekStart, onWeek }) 
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div>}
             <FocusBlock state={state} actions={actions} b={brand} area={a} weekStart={weekStart} wk={wk} />
           </section>
         ))}
